@@ -41,7 +41,7 @@ public class GUI{
         
         gbc.gridx = 2;
         gbc.gridy = 0;        
-        labelMemory = new JLabel ("100 000 000 Кб свободно из 250 000 000 Кб");
+        labelMemory = new JLabel ("100 000 000 пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ 250 000 000 пїЅпїЅ");
         frame.add(labelMemory, gbc);  
         
         gbc.gridx = 3;
@@ -58,7 +58,7 @@ public class GUI{
         
         gbc.gridx = 5;
         gbc.gridy = 0;        
-        labelMemory2 = new JLabel ("125 545 000 Кб свободно из 454 545 000 Кб");
+        labelMemory2 = new JLabel ("125 545 000 пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ 454 545 000 пїЅпїЅ");
         frame.add(labelMemory2, gbc); 
         
         gbc.gridx = 0;
@@ -131,6 +131,7 @@ public class GUI{
     
 	
     public static void main(String[] args) {
+            //test push
       	SwingUtilities.invokeLater(new Runnable(){
        		public void run(){
        			GUI fmGUI = new GUI();    
