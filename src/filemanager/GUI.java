@@ -132,12 +132,16 @@ public class GUI{
 	
     public static void main(String[] args) {
             //test push
-      	SwingUtilities.invokeLater(new Runnable(){
+      /*	SwingUtilities.invokeLater(new Runnable(){
        		public void run(){
        			GUI fmGUI = new GUI();    
        			fmGUI.makeGUI();
        		}
-       	});
+       	});*/
+            GUI2 GUI_2 = new GUI2();
+            GUI_2.Test();
+
+
    	}
 
 }
