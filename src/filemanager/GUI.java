@@ -140,8 +140,6 @@ public class GUI{
        	});*/
             GUI2 GUI_2 = new GUI2();
             GUI_2.Test();
-
-
    	}
 
 }
