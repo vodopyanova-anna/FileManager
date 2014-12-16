@@ -83,14 +83,12 @@ public class GUI{
                 diskLabel.setText(Usable+" kilobytes from "+Total+" kilobytes");
         }
 
-        //Вывод имен дисков типов дисков может пригодится
+        //useful info to deletion
        /*
        for (File f : files) {
            //System.out.println(FileSystemView.getFileSystemView().getSystemDisplayName(f));
           // System.out.println(FileSystemView.getFileSystemView().getSystemTypeDescription(f));
           // System.out.println(f);
-          getTotalSpace()
-          getFreeSpace()
           }*/
 
         public void makeGUI(){
