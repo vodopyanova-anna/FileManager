@@ -9,13 +9,12 @@ import java.util.*;
 public class GUI{
 	private JComboBox gcb, gcb2;
 	private JButton helpButton, createFolderButton, copyButton, renameButton, deleteButton, terminalButton, exitButton;
-	private JTable table, table2;
 	private JScrollPane scroll, scroll2;
-	private JLabel labelDisk, labelDisk2, labelMemory, labelMemory2, labelCommandLine;
+		private JLabel labelDisk, labelDisk2, labelMemory, labelMemory2, labelCommandLine;
 	private JTextField commandLine;
 	private GridBagLayout gbl;
 	private GridBagConstraints gbc;
-    private JList tempchoice;
+    private JList tempchoice,tempchoice2;
 	private int frameSizeX = 800;
 	private int frameSizeY = 600;
 	private int countButton = 7;
@@ -71,25 +70,25 @@ public class GUI{
                 diskComboBox.setRenderer(new IconListRenderer(icons)); // this string is for correct output of combobox
         }
         //This is only for initiaization
-        public void fillingDisksNameLabels(JLabel diskLabel){
-                File f[]=File.listRoots();
-                String [] parts = FileSystemView.getFileSystemView().getSystemDisplayName(f[0]).toString().split(" ");
+        public void fillingDisksNameLabels(JLabel diskLabel,JComboBox diskComboBox){
+                File f=new File(diskComboBox.getSelectedItem().toString());
+                String [] parts = FileSystemView.getFileSystemView().getSystemDisplayName(f).toString().split(" ");
                 diskLabel.setText("["+parts[0]+"]");
         }
         //This is only for initiaization
-        public void fillingDisksSpaceLabels(JLabel diskLabel){
-                File f[]=File.listRoots();
-                long Usable = f[0].getUsableSpace()/1024; // in kilobytes
-                long Total = f[0].getTotalSpace()/1024; // in kilobytes
+        public void fillingDisksSpaceLabels(JLabel diskLabel,JComboBox diskComboBox){
+            File f=new File(diskComboBox.getSelectedItem().toString());
+                long Usable = f.getUsableSpace()/1024; // in kilobytes
+                long Total = f.getTotalSpace()/1024; // in kilobytes
                 diskLabel.setText(Usable+" kilobytes from "+Total+" kilobytes");
         }
 
-        public void fillingList(JList window,  DefaultListModel listModel) {
+        public void fillingList(JList window,  DefaultListModel listModel,JComboBox diskComboBox) {
 
             Map<Object, Icon> icons = new HashMap<Object, Icon>();
-            File f[] = File.listRoots();
+            File f=new File(diskComboBox.getSelectedItem().toString());
 
-            java.util.List<File> files = Arrays.asList(f[0].listFiles());// all files eve hidden
+            java.util.List<File> files = Arrays.asList(f.listFiles());// all files eve hidden
 
             for (File iterator : files) {
               icons.put(FileSystemView.getFileSystemView().getSystemDisplayName(iterator), FileSystemView.getFileSystemView().getSystemIcon(iterator));
@@ -127,17 +126,18 @@ public class GUI{
         fillingDisksCombos(gcb);
         frame.add(gcb, gbc);
 
+
         gbc.gridx = 1;
         gbc.gridy = 0;
         gbc.ipadx = 5;
         labelDisk = new JLabel();
-                fillingDisksNameLabels(labelDisk);
+                fillingDisksNameLabels(labelDisk,gcb);
         frame.add(labelDisk, gbc);
 
         gbc.gridx = 2;
         gbc.gridy = 0;
         labelMemory = new JLabel();
-                fillingDisksSpaceLabels(labelMemory);
+                fillingDisksSpaceLabels(labelMemory,gcb);
         frame.add(labelMemory, gbc);
 
         gbc.gridx = 3;
@@ -151,14 +151,14 @@ public class GUI{
         gbc.gridy = 0;
         gbc.ipadx = 5;
         labelDisk2 = new JLabel();
-        fillingDisksNameLabels(labelDisk2);
+        fillingDisksNameLabels(labelDisk2,gcb2);
         frame.add(labelDisk2, gbc);
 
         gbc.gridx = 5;
         gbc.gridy = 0;
         labelMemory2 = new JLabel ();
 
-                fillingDisksSpaceLabels(labelMemory2);
+                fillingDisksSpaceLabels(labelMemory2,gcb2);
         frame.add(labelMemory2, gbc); // here are we filling second combo box with valid info
 
         gbc.gridx = 0;
@@ -173,19 +173,17 @@ public class GUI{
             DefaultListModel listModel = new DefaultListModel();
         tempchoice = new JList(listModel);
 
-        fillingList(tempchoice,listModel);
+        fillingList(tempchoice,listModel,gcb);
         scroll = new JScrollPane(tempchoice);
         frame.add(scroll, gbc);
 
         gbc.gridx = 3;
         gbc.gridy = 1;
-        Object [][] data2 = {
-        		{"folder", "", "1234"},
-        		{"folder", "", "12345"},
-        		{"file", "txt", "146"},
-        };
-        table2 = new JTable(data2, colHeads);
-        scroll2 = new JScrollPane(table2); //Please Explain
+
+            listModel.clear();
+            tempchoice2 = new JList(listModel);
+            fillingList(tempchoice2,listModel,gcb2);
+            scroll2 = new JScrollPane(tempchoice2);
         frame.add(scroll2, gbc);
 
         gbc.ipady = 15;
