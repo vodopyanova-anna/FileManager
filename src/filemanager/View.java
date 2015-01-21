@@ -2,52 +2,55 @@ package filemanager;
 
 import java.awt.*;
 import javax.swing.*;
+import javax.swing.filechooser.FileSystemView;
 import java.awt.event.*;
+import java.io.File;
+import java.util.*;
+import java.util.List;
+
+
+enum Byte {
+    KB("KB", 1024), MB("MB", 1024 * 1024), GB("GB", 1024 * 1024 * 1024);
+    private int amount;
+    private String name = "bytes";
+
+    Byte(String name, int amount) {
+        this.name = name;
+        this.amount = amount;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getAmount() {
+        return amount;
+    }
+}
 
 public class View extends JFrame{
+    private Byte bytes = Byte.GB;
 
-    public JTextField getCommandLine() {
-        return commandLine;
+    private JComboBox jcb, jcb2;
+    private JButton helpButton, createFolderButton, copyButton, renameButton, deleteButton, terminalButton, exitButton;
+    private JScrollPane scroll, scroll2;
+    private JLabel labelDisk, labelDisk2, labelMemory, labelMemory2, labelCommandLine;
+    private JTextField commandLine;
+
+    public JComboBox getJcb() {
+        return jcb;
     }
 
-    public JButton getCopyButton() {
-        return copyButton;
-    }
-
-    public JButton getCreateFolderButton() {
-        return createFolderButton;
-    }
-
-    public JButton getDeleteButton() {
-        return deleteButton;
-    }
-
-    public JButton getExitButton() {
-        return exitButton;
-    }
-
-    public JComboBox getGcb2() {
-        return gcb2;
-    }
-
-    public JComboBox getGcb() {
-        return gcb;
-    }
-
-    public JButton getHelpButton() {
-        return helpButton;
-    }
-
-    public JLabel getLabelCommandLine() {
-        return labelCommandLine;
-    }
-
-    public JLabel getLabelDisk2() {
-        return labelDisk2;
+    public JComboBox getJcb2() {
+        return jcb2;
     }
 
     public JLabel getLabelDisk() {
         return labelDisk;
+    }
+
+    public JLabel getLabelDisk2() {
+        return labelDisk2;
     }
 
     public JLabel getLabelMemory2() {
@@ -58,37 +61,24 @@ public class View extends JFrame{
         return labelMemory;
     }
 
-    public DefaultListModel getListModel2() {
-        return listModel2;
-    }
-
-    public JButton getRenameButton() {
-        return renameButton;
-    }
-
     public DefaultListModel getListModel() {
         return listModel;
     }
 
-    public JList getTempChoice2() {
-        return tempChoice2;
+    public DefaultListModel getListModel2() {
+        return listModel2;
     }
 
-    public JList getTempChoice() {
-        return tempChoice;
+    public JList getListOfFiles() {
+        return listOfFiles;
     }
 
-    public JButton getTerminalButton() {
-        return terminalButton;
+    public JList getListOfFiles2() {
+        return listOfFiles2;
     }
 
-    private JComboBox gcb, gcb2;
-    private JButton helpButton, createFolderButton, copyButton, renameButton, deleteButton, terminalButton, exitButton;
-    private JScrollPane scroll, scroll2;
-    private JLabel labelDisk, labelDisk2, labelMemory, labelMemory2, labelCommandLine;
-    private JTextField commandLine;
     private DefaultListModel listModel, listModel2;
-    private JList tempChoice, tempChoice2;
+    private JList listOfFiles, listOfFiles2;
     private GridBagLayout gbl;
     private GridBagConstraints gbc;
     private int frameSizeX = 800;
@@ -110,8 +100,8 @@ public class View extends JFrame{
         gbc.gridx = 0;
         gbc.gridy = 0;
 
-        gcb = new JComboBox();
-        this.add(gcb, gbc);
+        jcb = new JComboBox();
+        this.add(jcb, gbc);
 
         gbc.gridx = 1;
         gbc.gridy = 0;
@@ -127,8 +117,8 @@ public class View extends JFrame{
         gbc.gridx = 3;
         gbc.gridy = 0;
         gbc.ipadx = 0;
-        gcb2 = new JComboBox();
-        this.add(gcb2, gbc);
+        jcb2 = new JComboBox();
+        this.add(jcb2, gbc);
 
         gbc.gridx = 4;
         gbc.gridy = 0;
@@ -148,16 +138,16 @@ public class View extends JFrame{
         gbc.gridwidth = 3;
 
         listModel = new DefaultListModel();
-        tempChoice = new JList(listModel);
-        scroll = new JScrollPane(tempChoice);
+        listOfFiles = new JList(listModel);
+        scroll = new JScrollPane(listOfFiles);
         this.add(scroll, gbc);
 
         gbc.gridx = 3;
         gbc.gridy = 1;
 
         listModel2 = new DefaultListModel();
-        tempChoice2 = new JList(listModel2);
-        scroll2 = new JScrollPane(tempChoice2);
+        listOfFiles2 = new JList(listModel2);
+        scroll2 = new JScrollPane(listOfFiles2);
         this.add(scroll2, gbc);
 
         gbc.ipady = 15;
@@ -199,18 +189,117 @@ public class View extends JFrame{
         this.setResizable(false);
     }
 
-        public void addActionListener(ActionListener l){
-            gcb.addActionListener(l);
-            gcb2.addActionListener(l);
-            helpButton.addActionListener(l);
-            createFolderButton.addActionListener(l);
-            copyButton.addActionListener(l);
-            renameButton.addActionListener(l);
-            deleteButton.addActionListener(l);
-            terminalButton.addActionListener(l);
-            exitButton.addActionListener(l);
-            commandLine.addActionListener(l);
+    public void addActionListener(ActionListener l){
+        jcb.addActionListener(l);
+        jcb2.addActionListener(l);
+        helpButton.addActionListener(l);
+        createFolderButton.addActionListener(l);
+        copyButton.addActionListener(l);
+        renameButton.addActionListener(l);
+        deleteButton.addActionListener(l);
+        terminalButton.addActionListener(l);
+        exitButton.addActionListener(l);
+        commandLine.addActionListener(l);
+    }
+
+    // This inner class is needed to input icons + text in comboBoxes
+    public class IconListRenderer
+            extends DefaultListCellRenderer {
+
+        private Map<Object, Icon> icons = null;
+
+        public IconListRenderer(Map<Object, Icon> icons) {
+            this.icons = icons;
         }
 
+        @Override
+        public Component getListCellRendererComponent(
+                JList list, Object value, int index,
+                boolean isSelected, boolean cellHasFocus) {
+
+            // Get the renderer component from parent class
+
+            JLabel label =
+                    (JLabel) super.getListCellRendererComponent(list,
+                            value, index, isSelected, cellHasFocus);
+
+            // Get icon to use for the list item value
+
+            Icon icon = icons.get(value);
+
+            // Set icon to display for value
+
+            label.setIcon(icon);
+            return label;
+        }
+    }
+
+    // This method fills combobox with disk letters and icons
+    public void fillDisksCombos(JComboBox jcb, List<File> files) {
+        try {
+            Map<Object, Icon> icons = new HashMap<Object, Icon>();
+            for (File f : files) {
+                icons.put(f.toString(), FileSystemView.getFileSystemView().getSystemIcon(f));
+            }
+            for (File f : files) {
+                jcb.addItem(f.toString());
+            }
+            jcb.setRenderer(new IconListRenderer(icons)); // this string is for correct output of combobox
+        }catch(Exception e){/***/}      //correct!!!
+    }
+    //This is only for initiaization
+    public void fillDisksNameLabels(JComboBox jcb, JLabel labelDisk){
+        File f = new File(jcb.getSelectedItem().toString());
+        String diskName = FileSystemView.getFileSystemView().getSystemDisplayName(f).toString();
+        labelDisk.setText("[" + diskName + "]");
+    }
+
+    public void fillPathLabels(String diskPath, JLabel labelDisk){
+        labelDisk.setText("[" + diskPath + "]");
+    }
+
+    //This is only for initiaization
+    public void fillDisksSpaceLabels(JComboBox jcb, JLabel labelMemory){
+        File f = new File(jcb.getSelectedItem().toString());
+        long Usable = f.getUsableSpace()/bytes.getAmount();
+        long Total = f.getTotalSpace()/bytes.getAmount();
+        labelMemory.setText(Usable + " " + bytes.getName() + " from " + Total + " " + bytes.getName());
+    }
+
+    public void fillList(DefaultListModel listModel, JList listOfFiles, List<File> files) {
+        listModel.clear();
+        if(files != null) {
+            Map<Object, Icon> icons = new HashMap<Object, Icon>();
+            for (File iterator : files) {
+                icons.put(FileSystemView.getFileSystemView().getSystemDisplayName(iterator),
+                        FileSystemView.getFileSystemView().getSystemIcon(iterator));
+            }
+            for (File iterator : files) {
+                listModel.addElement(FileSystemView.getFileSystemView().getSystemDisplayName(iterator));
+            }
+            listOfFiles.setCellRenderer(new IconListRenderer(icons));
+        }
+    }
+
+    public void fillLabelCommandLine(JComboBox jcb){
+        labelCommandLine.setText(jcb.getSelectedItem().toString());
+    }
+
+    public void actionExit(JButton button, ActionEvent e){
+        if(e.getSource() == button) {
+            System.exit(0);
+        }
+    }
+
+   /* public void mouseClicked(MouseEvent mouseEvent) {
+        JList theList = (JList) mouseEvent.getSource();
+        if (mouseEvent.getClickCount() == 2) {
+            int index = theList.locationToIndex(mouseEvent.getPoint());
+            if (index >= 0) {
+                Object o = theList.getModel().getElementAt(index);
+                System.out.println(o.toString());
+            }
+        }
+    }*/
 
 }

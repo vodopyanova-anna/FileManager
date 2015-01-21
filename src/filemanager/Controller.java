@@ -2,6 +2,8 @@ package filemanager;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 public class Controller implements ActionListener{
     private Model model;
@@ -11,26 +13,35 @@ public class Controller implements ActionListener{
         this.model = m;
         this.view = v;
         view.makeGUI();
-        model.fillingDisksCombos(view.getGcb());
-        model.fillingDisksCombos(view.getGcb2());
-        model.fillingList(view.getTempChoice(), view.getListModel(), view.getGcb());
-        model.fillingList(view.getTempChoice2(), view.getListModel2(), view.getGcb2());
-        model.fillingDisksNameLabels(view.getLabelDisk(), view.getGcb());
-        model.fillingDisksNameLabels(view.getLabelDisk2(), view.getGcb2());
-        model.fillingDisksSpaceLabels(view.getLabelMemory(), view.getGcb());
-        model.fillingDisksSpaceLabels(view.getLabelMemory2(), view.getGcb2());
-        model.fillingLabelCommandLine(view.getLabelCommandLine(), view.getGcb());
-        this.view.addActionListener(this);
+        view.fillDisksCombos(view.getJcb(), model.getSystemDrivers());
+        view.fillDisksCombos(view.getJcb2(), model.getSystemDrivers());
+        view.fillDisksNameLabels(view.getJcb(), view.getLabelDisk());
+        //view.fillDisksNameLabels(view.getJcb2(), view.getLabelDisk2());
+        view.fillPathLabels(model.getDesktopPath().toString(), view.getLabelDisk2()); //just as a variant
+        view.fillDisksSpaceLabels(view.getJcb(), view.getLabelMemory());
+        view.fillDisksSpaceLabels(view.getJcb2(), view.getLabelMemory2());
+        view.fillLabelCommandLine(view.getJcb());
+        view.fillList(view.getListModel(), view.getListOfFiles(), model.getFiles());
+        view.fillList(view.getListModel2(), view.getListOfFiles2(), model.getFiles());
+        view.addActionListener(this);
     }
     public  void actionPerformed(ActionEvent e){
-        model.fillingList(view.getTempChoice(), view.getListModel(), view.getGcb());
-        model.fillingList(view.getTempChoice2(), view.getListModel2(), view.getGcb2());
-        model.fillingDisksNameLabels(view.getLabelDisk(), view.getGcb());
-        model.fillingDisksNameLabels(view.getLabelDisk2(), view.getGcb2());
-        model.fillingDisksSpaceLabels(view.getLabelMemory(), view.getGcb());
-        model.fillingDisksSpaceLabels(view.getLabelMemory2(), view.getGcb2());
-        model.fillingLabelCommandLine(view.getLabelCommandLine(), view.getGcb(), e);
-        model.fillingLabelCommandLine(view.getLabelCommandLine(), view.getGcb2(), e);
-        model.actionExit(view.getExitButton(), e);
+        if(e.getSource() == view.getJcb()){
+            view.fillDisksNameLabels(view.getJcb(), view.getLabelDisk());
+            view.fillDisksSpaceLabels(view.getJcb(), view.getLabelMemory());
+            view.fillLabelCommandLine(view.getJcb());
+            view.fillList(view.getListModel(), view.getListOfFiles(),
+                    model.getFileListByDriveName(view.getJcb().getSelectedIndex()));
+        }
+        else if(e.getSource() == view.getJcb2()){
+            view.fillPathLabels(view.getJcb2().getSelectedItem().toString(), view.getLabelDisk2());
+            view.fillDisksSpaceLabels(view.getJcb2(), view.getLabelMemory2());
+            view.fillLabelCommandLine(view.getJcb2());
+            view.fillList(view.getListModel2(), view.getListOfFiles2(),
+                    model.getFileListByDriveName(view.getJcb2().getSelectedIndex()));
+        }
+
+
     }
+
 }
