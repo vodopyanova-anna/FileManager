@@ -28,14 +28,17 @@ enum Byte {
     }
 }
 
-public class View extends JFrame{
+public class View extends JFrame implements Observer{
     private Byte bytes = Byte.GB;
-
     private JComboBox jcb, jcb2;
     private JButton helpButton, createFolderButton, copyButton, renameButton, deleteButton, terminalButton, exitButton;
-    private JScrollPane scroll, scroll2;
     private JLabel labelDisk, labelDisk2, labelMemory, labelMemory2, labelCommandLine;
     private JTextField commandLine;
+    private DefaultListModel listModel, listModel2;
+    private JList listOfFiles, listOfFiles2;
+    private int frameSizeX = 800;
+    private int frameSizeY = 600;
+    private int countButton = 7;
 
     public JComboBox getJcb() {
         return jcb;
@@ -77,92 +80,73 @@ public class View extends JFrame{
         return listOfFiles2;
     }
 
-    private DefaultListModel listModel, listModel2;
-    private JList listOfFiles, listOfFiles2;
-    private GridBagLayout gbl;
-    private GridBagConstraints gbc;
-    private int frameSizeX = 800;
-    private int frameSizeY = 600;
-    private int countButton = 7;
     public View() {
         this.setTitle("File Manager");
-        gbl = new GridBagLayout();
-        gbc = new GridBagConstraints();
-        this.setLayout(gbl);
+        this.setLayout(new GridBagLayout());
         this.setSize(frameSizeX, frameSizeY);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
     public void makeGUI(){
+        GridBagConstraints gbc = new GridBagConstraints();
         gbc.weightx = 0.5;
-        gbc.weighty = 0.5;
-
+        gbc.weighty = 0.2;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.gridx = 0;
         gbc.gridy = 0;
+        gbc.ipady = 10;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
 
+        JPanel leftTopPanel = new JPanel();
+        leftTopPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
         jcb = new JComboBox();
-        this.add(jcb, gbc);
-
-        gbc.gridx = 1;
-        gbc.gridy = 0;
-        gbc.ipadx = 5;
+        leftTopPanel.add(jcb);
         labelDisk = new JLabel();
-        this.add(labelDisk, gbc);
-
-        gbc.gridx = 2;
-        gbc.gridy = 0;
+        leftTopPanel.add(labelDisk);
         labelMemory = new JLabel();
-        this.add(labelMemory, gbc);
+        leftTopPanel.add(labelMemory);
 
-        gbc.gridx = 3;
-        gbc.gridy = 0;
-        gbc.ipadx = 0;
+        JPanel rightTopPanel = new JPanel();
+        rightTopPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
         jcb2 = new JComboBox();
-        this.add(jcb2, gbc);
-
-        gbc.gridx = 4;
-        gbc.gridy = 0;
-        gbc.ipadx = 5;
+        rightTopPanel.add(jcb2);
         labelDisk2 = new JLabel();
-        this.add(labelDisk2, gbc);
-
-        gbc.gridx = 5;
-        gbc.gridy = 0;
+        rightTopPanel.add(labelDisk2);
         labelMemory2 = new JLabel();
-        this.add(labelMemory2, gbc);
+        rightTopPanel.add(labelMemory2);
+
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new GridLayout(1, 2));
+        topPanel.add(leftTopPanel);
+        topPanel.add(rightTopPanel);
+        this.add(topPanel, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 1;
-        gbc.ipadx = 380;
-        gbc.ipady = 460;
-        gbc.gridwidth = 3;
-
+        gbc.ipady = 470;
+        JPanel listPanel = new JPanel();
+        listPanel.setLayout(new GridLayout(1, 2));
         listModel = new DefaultListModel();
         listOfFiles = new JList(listModel);
-        scroll = new JScrollPane(listOfFiles);
-        this.add(scroll, gbc);
-
-        gbc.gridx = 3;
-        gbc.gridy = 1;
+        JScrollPane scroll = new JScrollPane(listOfFiles);
+        listPanel.add(scroll);
 
         listModel2 = new DefaultListModel();
         listOfFiles2 = new JList(listModel2);
-        scroll2 = new JScrollPane(listOfFiles2);
-        this.add(scroll2, gbc);
+        JScrollPane scroll2 = new JScrollPane(listOfFiles2);
+        listPanel.add(scroll2);
+        this.add(listPanel, gbc);
 
-        gbc.ipady = 15;
-        gbc.gridx = 0;
+        gbc.ipady = 20;
         gbc.gridy = 2;
+        JPanel commandLinePanel = new JPanel();
+        commandLinePanel.setLayout(new GridLayout(1, 2));
         labelCommandLine = new JLabel();
-        this.add(labelCommandLine, gbc);
+        commandLinePanel.add(labelCommandLine);
+        commandLine = new JTextField(50);
+        commandLinePanel.add(commandLine);
 
-        commandLine = new JTextField();
-        gbc.gridx = 1;
-        gbc.gridy = 2;
-        gbc.gridwidth = 8;
-        gbc.ipadx = 724;
-        commandLine = new JTextField();
-        this.add(commandLine, gbc);
+        this.add(commandLinePanel, gbc);
 
         helpButton = new JButton("F1-Help");
         createFolderButton = new JButton("F2-New folder");
@@ -182,7 +166,7 @@ public class View extends JFrame{
         buttonPanel.add(terminalButton);
         buttonPanel.add(exitButton);
 
-        gbc.gridx = 0;
+        gbc.ipady = 20;
         gbc.gridy = 3;
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         this.add(buttonPanel, gbc);
@@ -281,8 +265,8 @@ public class View extends JFrame{
         }
     }
 
-    public void fillLabelCommandLine(JComboBox jcb){
-        labelCommandLine.setText(jcb.getSelectedItem().toString());
+    public void fillLabelCommandLine(String labelText){
+        labelCommandLine.setText(labelText);
     }
 
     public void actionExit(JButton button, ActionEvent e){
@@ -291,15 +275,17 @@ public class View extends JFrame{
         }
     }
 
-   /* public void mouseClicked(MouseEvent mouseEvent) {
-        JList theList = (JList) mouseEvent.getSource();
-        if (mouseEvent.getClickCount() == 2) {
-            int index = theList.locationToIndex(mouseEvent.getPoint());
-            if (index >= 0) {
-                Object o = theList.getModel().getElementAt(index);
-                System.out.println(o.toString());
-            }
-        }
-    }*/
+    public void addMouseClicked(MouseListener l) {
+        listOfFiles.addMouseListener(l);
+        listOfFiles2.addMouseListener(l);
+    }
 
+
+    @Override
+    public void update(Observable o, Object arg) {
+        if(o instanceof Model){
+            Model model = (Model) o;
+
+        }
+    }
 }
