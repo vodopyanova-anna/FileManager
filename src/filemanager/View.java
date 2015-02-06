@@ -265,6 +265,23 @@ public class View extends JFrame implements Observer{
         }
     }
 
+    public void fillList(DefaultListModel listModel, JList listOfFiles, List<File> files, File parentDirectory) {
+        listModel.clear();
+        if(files != null) {
+            Map<Object, Icon> icons = new HashMap<Object, Icon>();
+            for (File iterator : files) {
+                icons.put(FileSystemView.getFileSystemView().getSystemDisplayName(iterator),
+                        FileSystemView.getFileSystemView().getSystemIcon(iterator));
+            }
+            icons.put(parentDirectory, FileSystemView.getFileSystemView().getSystemIcon(parentDirectory));
+            for (File iterator : files) {
+                listModel.addElement(FileSystemView.getFileSystemView().getSystemDisplayName(iterator));
+            }
+            listModel.add(0, parentDirectory);
+            listOfFiles.setCellRenderer(new IconListRenderer(icons));
+        }
+    }
+
     public void fillLabelCommandLine(String labelText){
         labelCommandLine.setText(labelText);
     }

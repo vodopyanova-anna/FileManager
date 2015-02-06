@@ -10,13 +10,14 @@ public class Model extends Observable{
     private List<File> systemDrivers = new ArrayList(Arrays.asList(File.listRoots()));
     private List<File> files = new ArrayList(Arrays.asList(desktopPath.listFiles()));
     private String currentActivePath = desktopPath.getPath();
+    private Stack<File> stackOfFilePath = new Stack<File>();
+
+    public Stack<File> getStackOfFilePath() {
+        return stackOfFilePath;
+    }
 
     public String getCurrentActivePath() {
         return currentActivePath;
-    }
-
-    public void setCurrentActivePath(String currentActivePath) {
-        this.currentActivePath = currentActivePath;
     }
 
     public File getDesktopPath() {
@@ -34,6 +35,7 @@ public class Model extends Observable{
     public List<File> getFileListByDriveName(int drive_id){
         if(systemDrivers.get(drive_id).listFiles() != null) {
             files = Arrays.asList(systemDrivers.get(drive_id).listFiles());
+            stackOfFilePath.push(new File(systemDrivers.get(drive_id).getPath()));
             currentActivePath = systemDrivers.get(drive_id).getPath();
             return files;
         }else
