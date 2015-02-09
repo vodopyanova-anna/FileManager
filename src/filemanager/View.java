@@ -80,6 +80,34 @@ public class View extends JFrame implements Observer{
         return listOfFiles2;
     }
 
+    public JButton getHelpButton() {
+        return helpButton;
+    }
+
+    public JButton getCreateFolderButton() {
+        return createFolderButton;
+    }
+
+    public JButton getCopyButton() {
+        return copyButton;
+    }
+
+    public JButton getRenameButton() {
+        return renameButton;
+    }
+
+    public JButton getDeleteButton() {
+        return deleteButton;
+    }
+
+    public JButton getExitButton() {
+        return exitButton;
+    }
+
+    public JButton getTerminalButton() {
+        return terminalButton;
+    }
+
     public View() {
         this.setTitle("File Manager");
         this.setLayout(new GridBagLayout());
@@ -171,19 +199,6 @@ public class View extends JFrame implements Observer{
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         this.add(buttonPanel, gbc);
         this.setResizable(false);
-    }
-
-    public void addActionListener(ActionListener l){
-        jcb.addActionListener(l);
-        jcb2.addActionListener(l);
-        helpButton.addActionListener(l);
-        createFolderButton.addActionListener(l);
-        copyButton.addActionListener(l);
-        renameButton.addActionListener(l);
-        deleteButton.addActionListener(l);
-        terminalButton.addActionListener(l);
-        exitButton.addActionListener(l);
-        commandLine.addActionListener(l);
     }
 
     // This inner class is needed to input icons + text in comboBoxes
@@ -286,10 +301,17 @@ public class View extends JFrame implements Observer{
         labelCommandLine.setText(labelText);
     }
 
-    public void actionExit(JButton button, ActionEvent e){
-        if(e.getSource() == button) {
-            System.exit(0);
-        }
+    public void addActionListener(ActionListener l){
+        jcb.addActionListener(l);
+        jcb2.addActionListener(l);
+        helpButton.addActionListener(l);
+        createFolderButton.addActionListener(l);
+        copyButton.addActionListener(l);
+        renameButton.addActionListener(l);
+        deleteButton.addActionListener(l);
+        terminalButton.addActionListener(l);
+        exitButton.addActionListener(l);
+        commandLine.addActionListener(l);
     }
 
     public void addMouseClicked(MouseListener l) {
